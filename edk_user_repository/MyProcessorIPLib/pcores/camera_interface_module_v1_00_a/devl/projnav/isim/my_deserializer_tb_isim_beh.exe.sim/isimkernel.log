@@ -1,0 +1,28 @@
+Command line:
+   my_deserializer_tb_isim_beh.exe
+     -simmode  gui
+     -simrunnum  0
+     -socket  54887
+
+Mon Mar  4 14:54:37 2013
+
+
+ Elaboration Time: 0.03 sec
+
+ Current Memory Usage: 198.509 Meg
+
+ Total Signals          : 25
+ Total Nets             : 145
+ Total Signal Drivers   : 14
+ Total Blocks           : 5
+ Total Primitive Blocks : 4
+ Total Processes        : 7
+ Total Traceable Variables  : 14
+ Total Scalar Nets and Variables : 527
+
+ Total Simulation Time: 0.05 sec
+
+ Current Memory Usage: 274.01 Meg
+
+Mon Mar  4 15:32:30 2013
+

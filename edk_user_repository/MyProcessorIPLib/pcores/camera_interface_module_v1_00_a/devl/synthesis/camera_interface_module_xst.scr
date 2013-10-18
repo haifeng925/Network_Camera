@@ -1,0 +1,12 @@
+run
+-opt_level 2
+-opt_mode speed
+-ifmt mixed
+-ifn "/home/marco/xilinx/14.3/ISE_DS/edk_user_repository/MyProcessorIPLib/pcores/camera_interface_module_v1_00_a/devl/synthesis/camera_interface_module_xst.prj"
+-top camera_interface_module
+-p virtex6
+-ofn "/home/marco/xilinx/14.3/ISE_DS/edk_user_repository/MyProcessorIPLib/pcores/camera_interface_module_v1_00_a/devl/synthesis/camera_interface_module_xst.ngc"
+-iobuf NO
+-rtlview YES
+-hierarchy_separator /
+-work_lib camera_interface_module_v1_00_a

@@ -1,0 +1,16 @@
+/*
+ * network_tools.h
+ *
+ *  Created on: Feb 27, 2013
+ *      Author: marco
+ */
+
+#ifndef NETWORK_TOOLS_H_
+#define NETWORK_TOOLS_H_
+
+
+#define ITP_PACKET_MAX_DATA_SIZE 1400
+
+int send_image_over_network(void* image_buffer, int image_number);
+
+#endif /* NETWORK_TOOLS_H_ */

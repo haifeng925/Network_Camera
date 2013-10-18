@@ -1,0 +1,28 @@
+/*
+ * network_tools.h
+ *
+ *  Created on: Feb 27, 2013
+ *      Author: marco
+ */
+
+#ifndef NETWORK_TOOLS_H_
+#define NETWORK_TOOLS_H_
+
+
+#define ITP_PACKET_MAX_DATA_SIZE 1400
+
+
+typedef struct _ITP_Packet_Header {
+	Xuint32 width;
+	Xuint32 height;
+	Xuint32 total_packets_per_image;
+	Xuint32 packet_nr_of_image;
+	Xuint32 image_data_offset;
+	Xuint32 data_length;
+	Xuint32 image_nr;
+} ITP_Packet_Header;
+
+
+int send_image_over_network(void* image_buffer, int image_number);
+
+#endif /* NETWORK_TOOLS_H_ */

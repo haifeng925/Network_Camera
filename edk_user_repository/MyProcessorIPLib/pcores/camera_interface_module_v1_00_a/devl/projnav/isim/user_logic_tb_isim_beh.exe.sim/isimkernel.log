@@ -1,0 +1,10 @@
+Command line:
+   user_logic_tb_isim_beh.exe
+     -simmode  gui
+     -simrunnum  0
+     -socket  41970
+
+Fri Mar  8 15:38:39 2013
+
+
+ Elaboration Time: 0.03 sec

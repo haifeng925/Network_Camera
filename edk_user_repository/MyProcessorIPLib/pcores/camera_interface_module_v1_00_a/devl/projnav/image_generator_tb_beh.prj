@@ -1,0 +1,2 @@
+vhdl work "../../hdl/vhdl/ImageGenerator.vhd"
+vhdl work "../../hdl/vhdl/image_generator_tb.vhd"

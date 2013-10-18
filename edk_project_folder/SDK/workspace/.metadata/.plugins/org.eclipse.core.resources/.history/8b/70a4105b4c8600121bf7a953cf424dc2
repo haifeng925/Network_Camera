@@ -1,0 +1,22 @@
+#ifndef CONFIG_H_
+#define CONFIG_H_
+
+
+#include "xparameters.h"
+
+
+#define WIDTH 640
+#define HEIGHT 480
+#define BYTE_PER_PIXEL 2
+
+#define BUFFER_1 XPAR_DDR_SDRAM_MPMC_BASEADDR
+
+#define BUFFER_2 (BUFFER_1+(WIDTH*HEIGHT*BYTE_PER_PIXEL))
+
+#define MAC_ADDRESS_SOURCE	{ 0xE8, 0x03, 0x9A, 0xB5, 0x41, 0x05}
+#define MAC_ADDRESS_DEST	{ 0xE8, 0x03, 0x9A, 0xBD, 0xD7, 0x06}
+#define IP_ADDRESS_SOURCE	{ 10, 8 , 2 , 182 }
+#define IP_ADDRESS_DEST		{ 10, 8 , 2 , 183 }
+
+
+#endif /* CONFIG_H_ */

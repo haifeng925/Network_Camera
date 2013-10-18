@@ -1,0 +1,13 @@
+##############################################################################
+## Filename:          /home/marco/xilinx/14.3/ISE_DS/edk_user_repository/MyProcessorIPLib/pcores/camera_interface_module_v1_00_a/data/camera_interface_module_v2_1_0.pao
+## Description:       Peripheral Analysis Order
+## Date:              Wed Jan 16 11:19:20 2013 (by Create and Import Peripheral Wizard)
+##############################################################################
+
+lib proc_common_v3_00_a  all 
+lib plbv46_slave_single_v1_01_a  all 
+lib plbv46_master_single_v1_01_a  all 
+lib camera_interface_module_v1_00_a my_deserializer vhdl
+lib camera_interface_module_v1_00_a ImageGenerator vhdl
+lib camera_interface_module_v1_00_a user_logic vhdl
+lib camera_interface_module_v1_00_a camera_interface_module vhdl

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="/home/marco/xilinx/14.3/ISE_DS/edk_user_repository/MyProcessorIPLib/pcores/camera_interface_module_v1_00_a/devl/projnav/user_logic_tb_isim_beh.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="numeric_std" />
+            <top_module name="proc_common_pkg" />
+            <top_module name="std_logic_1164" />
+            <top_module name="std_logic_arith" />
+            <top_module name="std_logic_unsigned" />
+            <top_module name="user_logic_tb" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="22" />
+   <wvobject fp_name="/user_logic_tb/bus2ip_clk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">bus2ip_clk</obj_property>
+      <obj_property name="ObjectShortName">bus2ip_clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/user_logic_tb/as_log/mst_go" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">mst_go</obj_property>
+      <obj_property name="ObjectShortName">mst_go</obj_property>
+   </wvobject>
+   <wvobject fp_name="/user_logic_tb/as_log/slv_reg0[0]" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">[0]</obj_property>
+      <obj_property name="ObjectShortName">slv_reg0[0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/user_logic_tb/as_log/start_one_frame" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">start_one_frame</obj_property>
+      <obj_property name="ObjectShortName">start_one_frame</obj_property>
+   </wvobject>
+   <wvobject fp_name="/user_logic_tb/as_log/mst_cmd_sm_clr_go" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">mst_cmd_sm_clr_go</obj_property>
+      <obj_property name="ObjectShortName">mst_cmd_sm_clr_go</obj_property>
+   </wvobject>
+   <wvobject fp_name="/user_logic_tb/as_log/mst_write_word_go" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">mst_write_word_go</obj_property>
+      <obj_property name="ObjectShortName">mst_write_word_go</obj_property>
+   </wvobject>
+   <wvobject fp_name="/user_logic_tb/as_log/next_state" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">next_state</obj_property>
+      <obj_property name="ObjectShortName">next_state</obj_property>
+   </wvobject>
+   <wvobject fp_name="/user_logic_tb/as_log/state" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">state</obj_property>
+      <obj_property name="ObjectShortName">state</obj_property>
+   </wvobject>
+   <wvobject fp_name="/user_logic_tb/as_log/mst_cmd_sm_state" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">mst_cmd_sm_state</obj_property>
+      <obj_property name="ObjectShortName">mst_cmd_sm_state</obj_property>
+   </wvobject>
+   <wvobject fp_name="/user_logic_tb/pixel_clock_signal" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">pixel_clock_signal</obj_property>
+      <obj_property name="ObjectShortName">pixel_clock_signal</obj_property>
+   </wvobject>
+   <wvobject fp_name="/user_logic_tb/as_log/frame_finished" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">frame_finished</obj_property>
+      <obj_property name="ObjectShortName">frame_finished</obj_property>
+   </wvobject>
+   <wvobject fp_name="/user_logic_tb/as_log/out_data_valid" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">out_data_valid</obj_property>
+      <obj_property name="ObjectShortName">out_data_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/user_logic_tb/end_of_line" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">end_of_line</obj_property>
+      <obj_property name="ObjectShortName">end_of_line</obj_property>
+   </wvobject>
+   <wvobject fp_name="/user_logic_tb/end_of_frame" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">end_of_frame</obj_property>
+      <obj_property name="ObjectShortName">end_of_frame</obj_property>
+   </wvobject>
+   <wvobject fp_name="/user_logic_tb/as_log/DATA_DESERIALIZER_1/next_state" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">next_state</obj_property>
+      <obj_property name="ObjectShortName">next_state</obj_property>
+   </wvobject>
+   <wvobject fp_name="/user_logic_tb/as_log/DATA_DESERIALIZER_1/state" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">state</obj_property>
+      <obj_property name="ObjectShortName">state</obj_property>
+   </wvobject>
+   <wvobject fp_name="/user_logic_tb/ip2bus_mstwr_req" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">ip2bus_mstwr_req</obj_property>
+      <obj_property name="ObjectShortName">ip2bus_mstwr_req</obj_property>
+   </wvobject>
+   <wvobject fp_name="/user_logic_tb/im_gen/pixel_data_i" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">pixel_data_i[7:0]</obj_property>
+      <obj_property name="ObjectShortName">pixel_data_i[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/user_logic_tb/as_log/target_address" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">target_address[0:31]</obj_property>
+      <obj_property name="ObjectShortName">target_address[0:31]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/user_logic_tb/as_log/mst_cmd_sm_ip2bus_addr" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">mst_cmd_sm_ip2bus_addr[0:31]</obj_property>
+      <obj_property name="ObjectShortName">mst_cmd_sm_ip2bus_addr[0:31]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/user_logic_tb/as_log/ip2bus_mst_addr" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">ip2bus_mst_addr[0:31]</obj_property>
+      <obj_property name="ObjectShortName">ip2bus_mst_addr[0:31]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/user_logic_tb/as_log/ip2bus_mstwr_d" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">ip2bus_mstwr_d[0:31]</obj_property>
+      <obj_property name="ObjectShortName">ip2bus_mstwr_d[0:31]</obj_property>
+   </wvobject>
+</wave_config>

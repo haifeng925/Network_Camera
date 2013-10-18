@@ -1,0 +1,178 @@
+----------------------------------------------------------------------------------
+-- Company: 
+-- Engineer: 
+-- 
+-- Create Date:    13:25:36 01/16/2013 
+-- Design Name: 
+-- Module Name:    my_deserializer - Behavioral 
+-- Project Name: 
+-- Target Devices: 
+-- Tool versions: 
+-- Description: 
+--
+-- Dependencies: 
+--
+-- Revision: 
+-- Revision 0.01 - File Created
+-- Additional Comments: 
+--
+----------------------------------------------------------------------------------
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.std_logic_unsigned.all; 
+
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+--use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx primitives in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity my_deserializer is
+	 generic 
+	 (
+	   PIXEL_DATA_PER_WRITE : integer := 4;
+      C_MST_AWIDTH         : integer := 32;
+      C_MST_DWIDTH         : integer := 32
+	 );
+	 port 
+	 (
+		RESET					: in  std_logic;
+		BASE_ADDRESS		: in  std_logic_vector(0 to C_MST_AWIDTH-1);
+		START					: in  std_logic;
+		PIXEL_DATA     	: in  std_logic_vector(0 to 7);
+	   PIXEL_CLOCK    	: in  std_logic;
+	   END_OF_LINE    	: in  std_logic;
+	   END_OF_FRAME   	: in  std_logic;
+		TARGET_ADDRESS		: out std_logic_vector(0 to C_MST_AWIDTH-1);
+		OUT_DATA				: out std_logic_vector(0 to C_MST_DWIDTH-1);
+		OUT_DATA_VALID		: out std_logic;
+		FRAME_FINISHED		: out std_logic
+	 );
+
+end my_deserializer;
+
+architecture Behavioral of my_deserializer is
+
+  signal ADDRESS_OFFSET : std_logic_vector(0 to C_MST_AWIDTH-1);
+  
+  type STATES is (WAIT_START, WAIT_NO_FRAME, WAIT_FIRST_DATA, WAIT_DATA_1, WAIT_DATA_2,  WAIT_DATA_3,  WAIT_DATA_4);
+  signal STATE : STATES;
+  signal NEXT_STATE : STATES;
+  
+begin
+  TARGET_ADDRESS <= BASE_ADDRESS + ADDRESS_OFFSET;
+  
+  STATE_MEMORY : process(PIXEL_CLOCK, RESET)
+  	begin
+  	  if RESET='1'	then
+	  	  	STATE <= WAIT_START;
+  	  	elsif PIXEL_CLOCK'event and PIXEL_CLOCK = '1' then
+  	  		STATE <= NEXT_STATE;
+  	  	end if;
+  	end process STATE_MEMORY;
+  	
+  	NEXT_STATE_DECODER: process(START, END_OF_FRAME, END_OF_LINE, state)
+  	begin 
+		--if PIXEL_CLOCK'event and PIXEL_CLOCK = '1' then
+		   next_state <= state;
+		
+			case STATE is
+				when WAIT_START =>
+					if START = '1' then
+						if END_OF_FRAME = '1' then
+							NEXT_STATE <= WAIT_NO_FRAME;
+						elsif END_OF_FRAME = '0' then
+							NEXT_STATE <= WAIT_FIRST_DATA;
+						end if;
+					elsif START = '0' then 
+						NEXT_STATE <= WAIT_START;
+					end if;
+				
+				when WAIT_NO_FRAME =>
+					if END_OF_FRAME = '1' then
+						NEXT_STATE <= WAIT_NO_FRAME;
+					elsif END_OF_FRAME = '0' then
+						NEXT_STATE <= WAIT_FIRST_DATA;
+					end if;
+				
+				when WAIT_FIRST_DATA =>
+					if (END_OF_FRAME = '1' and END_OF_LINE = '1') then
+						NEXT_STATE <= WAIT_DATA_2;
+					else
+						NEXT_STATE <= WAIT_FIRST_DATA;
+					end if;
+				
+				when WAIT_DATA_1 =>
+					if END_OF_FRAME = '0' then
+						NEXT_STATE <=  WAIT_START;
+					elsif END_OF_FRAME = '1' then
+						if END_OF_LINE = '0' then
+							NEXT_STATE <=  WAIT_DATA_1;
+						elsif END_OF_LINE = '1' then
+							NEXT_STATE <=  WAIT_DATA_2;
+						end if;
+					end if;
+				
+				when WAIT_DATA_2 =>
+					NEXT_STATE <=  WAIT_DATA_3;
+				
+				when WAIT_DATA_3 =>
+					NEXT_STATE <=  WAIT_DATA_4;
+				
+				when WAIT_DATA_4 =>
+					NEXT_STATE <=  WAIT_DATA_1;
+				
+				when others => null;
+				
+			end case;
+  		--end if;
+  	end process NEXT_STATE_DECODER;
+  	
+  	OUTPUT_DECODER: process (STATE, END_OF_FRAME, END_OF_LINE)
+  	begin
+--	  	if PIXEL_CLOCK'event and PIXEL_CLOCK = '1' then
+		   
+		   -- defaults
+		   
+	  		FRAME_FINISHED <= '0';
+	  		OUT_DATA_VALID <= '0';
+	 		
+	 		-- special cases
+	 		
+	 		if (STATE = WAIT_FIRST_DATA and END_OF_FRAME = '1' and END_OF_LINE = '1') then
+	 			OUT_DATA(0 to 7) <= PIXEL_DATA;
+	 			ADDRESS_OFFSET <= (others => '0');
+	 		end if;
+	 		
+	 		if (STATE = WAIT_DATA_1 and END_OF_FRAME = '0') then
+	 			FRAME_FINISHED <= '1';
+	 		end if;
+	 		
+	 		if (STATE = WAIT_DATA_1 and END_OF_FRAME = '1' and END_OF_LINE = '1') then
+	 			ADDRESS_OFFSET <= ADDRESS_OFFSET + 4;
+	 			OUT_DATA(0 to 7) <= PIXEL_DATA;
+	 		end if;
+	 		
+	 		if (STATE = WAIT_DATA_2 ) then
+	 			OUT_DATA(8 to 15) <= PIXEL_DATA;
+	 		end if;
+	 		
+	 		if (STATE = WAIT_DATA_3 ) then
+	 			OUT_DATA(16 to 23) <= PIXEL_DATA;
+	 		end if;
+	 		
+	 		if (STATE = WAIT_DATA_4 ) then
+	 			OUT_DATA(24 to 31) <= PIXEL_DATA;
+	  			OUT_DATA_VALID <= '1';
+	 		end if;
+	 		
+	--	end if;
+  	end process OUTPUT_DECODER;
+  
+  
+
+end Behavioral;
+

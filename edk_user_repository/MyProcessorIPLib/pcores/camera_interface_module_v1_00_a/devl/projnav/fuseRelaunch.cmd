@@ -1,0 +1,1 @@
+-intstyle "ise" -incremental -o "/home/marco/xilinx/14.3/ISE_DS/edk_user_repository/MyProcessorIPLib/pcores/camera_interface_module_v1_00_a/devl/projnav/user_logic_tb_isim_beh.exe" -prj "/home/marco/xilinx/14.3/ISE_DS/edk_user_repository/MyProcessorIPLib/pcores/camera_interface_module_v1_00_a/devl/projnav/user_logic_tb_beh.prj" "work.user_logic_tb" 

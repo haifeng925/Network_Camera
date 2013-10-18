@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item value="/home/marco/Studium/AEP/camera_capture/SDK/workspace/TestImageGen3/Debug/TestImageGen3.elf" key="camera_capture_hw_platform-microblaze_0-initElf"/>
+	<item value="/home/marco/Studium/AEP/camera_capture/SDK/workspace/camera_capture_hw_platform/system.bit" key="camera_capture_hw_platform-bitFile"/>
+	<item value="/home/marco/Studium/AEP/camera_capture/SDK/workspace/camera_capture_hw_platform/system_bd.bmm" key="camera_capture_hw_platform-bmmFile"/>
+</section>

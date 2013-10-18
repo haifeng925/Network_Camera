@@ -1,0 +1,4 @@
+AR user_logic imp /home/marco/xilinx/14.3/ISE_DS/edk_user_repository/MyProcessorIPLib/pcores/camera_interface_module_v1_00_a/devl/projnav/../../hdl/vhdl/user_logic.vhd sub00/vhpl01 1362693854
+EN user_logic NULL /home/marco/xilinx/14.3/ISE_DS/edk_user_repository/MyProcessorIPLib/pcores/camera_interface_module_v1_00_a/devl/projnav/../../hdl/vhdl/user_logic.vhd sub00/vhpl00 1362693853
+EN camera_interface_module NULL /home/marco/xilinx/14.3/ISE_DS/edk_user_repository/MyProcessorIPLib/pcores/camera_interface_module_v1_00_a/hdl/vhdl/camera_interface_module.vhd sub00/vhpl02 1362504682
+AR camera_interface_module imp /home/marco/xilinx/14.3/ISE_DS/edk_user_repository/MyProcessorIPLib/pcores/camera_interface_module_v1_00_a/hdl/vhdl/camera_interface_module.vhd sub00/vhpl03 1362504683

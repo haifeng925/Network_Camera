@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Delete 4 resources" deleteContents="false" description="Delete 4 resources" element1="/TestImageGen" element2="/TestImageGen_bsp" element3="/TestImageGen2" element4="/TestImageGen2_bsp" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="4" stamp="1362505990771"/>&#x0A;<refactoring comment="Delete 2 resources" deleteContents="false" description="Delete 2 resources" element1="/TestImageGen3/src/xemaclite_udp.c" element2="/TestImageGen3/src/xemaclite_udp.h" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="2" stamp="1362577261001"/>
+</session>

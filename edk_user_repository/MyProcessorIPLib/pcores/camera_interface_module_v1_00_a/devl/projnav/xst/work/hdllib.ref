@@ -1,0 +1,4 @@
+AR imagegenerator behavioral /home/marco/xilinx/14.3/ISE_DS/edk_user_repository/MyProcessorIPLib/pcores/camera_interface_module_v1_00_a/hdl/vhdl/ImageGenerator.vhd sub00/vhpl03 1362504681
+EN imagegenerator NULL /home/marco/xilinx/14.3/ISE_DS/edk_user_repository/MyProcessorIPLib/pcores/camera_interface_module_v1_00_a/hdl/vhdl/ImageGenerator.vhd sub00/vhpl02 1362504680
+EN my_deserializer NULL /home/marco/xilinx/14.3/ISE_DS/edk_user_repository/MyProcessorIPLib/pcores/camera_interface_module_v1_00_a/hdl/vhdl/my_deserializer.vhd sub00/vhpl00 1362504666
+AR my_deserializer behavioral /home/marco/xilinx/14.3/ISE_DS/edk_user_repository/MyProcessorIPLib/pcores/camera_interface_module_v1_00_a/hdl/vhdl/my_deserializer.vhd sub00/vhpl01 1362504667

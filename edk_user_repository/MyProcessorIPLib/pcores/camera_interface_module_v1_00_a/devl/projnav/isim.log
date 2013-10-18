@@ -1,0 +1,76 @@
+ISim log file
+Running: /home/marco/xilinx/14.3/ISE_DS/edk_user_repository/MyProcessorIPLib/pcores/camera_interface_module_v1_00_a/devl/projnav/user_logic_tb_isim_beh.exe -intstyle ise -gui -tclbatch isim.cmd -wdb /home/marco/xilinx/14.3/ISE_DS/edk_user_repository/MyProcessorIPLib/pcores/camera_interface_module_v1_00_a/devl/projnav/user_logic_tb_isim_beh.wdb 
+ISim P.40xd (signature 0xfbc00daa)
+This is a Full version of ISim.
+Time resolution is 1 ps
+# onerror resume
+# wave add /
+# run 1000 ns
+Simulator is doing circuit initialization process.
+Stopped at time : 0 fs : File "/home/marco/xilinx/14.3/ISE_DS/edk_user_repository/MyProcessorIPLib/pcores/camera_interface_module_v1_00_a/hdl/vhdl/user_logic_tb.vhd" Line 190
+ISim P.40xd (signature 0xfbc00daa)
+This is a Full version of ISim.
+# run 1000 ns
+Simulator is doing circuit initialization process.
+at 0 ps, Instance /user_logic_tb/as_log/DATA_DESERIALIZER_1/ : Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+Finished circuit initialization process.
+# run 1 us
+# isim force add /user_logic_tb/as_log/mst_go 1 -radix bin
+# run 0.2 us
+# isim force remove /user_logic_tb/as_log/mst_go
+# run 0.8 us
+# run 200 us
+ISim P.40xd (signature 0xfbc00daa)
+This is a Full version of ISim.
+# run 1000 ns
+Simulator is doing circuit initialization process.
+at 0 ps, Instance /user_logic_tb/as_log/DATA_DESERIALIZER_1/ : Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+Finished circuit initialization process.
+# run 1 us
+# isim force add /user_logic_tb/as_log/mst_go 1 -radix bin
+# run 0.2 us
+# isim force remove /user_logic_tb/as_log/mst_go
+# run 0.8 us
+# run 200 us
+# run 2 us
+# run 2 ms
+# isim force add /user_logic_tb/ip2bus_mstwr_req 1 -radix bin
+# isim force add /user_logic_tb/ip2bus_mstwr_req 1 -radix bin
+# run 1.00us
+# run 1.00us
+# run 1.00us
+# run 1.00us
+# run 1.00us
+# run 1.00us
+# run 1.00us
+# run 1.00us
+# isim force add /user_logic_tb/as_log/mst_go 1 -radix bin
+# run 0.2 us
+# isim force remove /user_logic_tb/as_log/mst_go
+# run 0.8 us
+# run 1.00us
+# run 1.00us
+# run 1.00us
+# run 1.00us
+# run 1.00us
+# run 1 ms
+# run 1 ms
+# isim force remove /user_logic_tb/ip2bus_mstwr_req
+# run 1.00us
+# isim force add /user_logic_tb/as_log/mst_cntl_wr_req 1 -radix bin
+# isim force add /user_logic_tb/as_log/mst_cntl_wr_req 1 -radix bin
+# run 1 ms
+# isim force add /user_logic_tb/as_log/mst_go 1 -radix bin
+# run 0.2 us
+# isim force remove /user_logic_tb/as_log/mst_go
+# run 0.8 us
+# run 1 ms
+# isim force add /user_logic_tb/as_log/DATA_DESERIALIZER_1/base_address 9c000000 -radix hex
+# isim force add /user_logic_tb/as_log/DATA_DESERIALIZER_1/base_address 9c000000 -radix hex
+# run 1 ms
+# isim force add /user_logic_tb/as_log/mst_go 1 -radix bin
+# run 0.2 us
+# isim force remove /user_logic_tb/as_log/mst_go
+# run 0.8 us
+# run 1 ms
+# run 1 ms

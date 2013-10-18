@@ -1,0 +1,96 @@
+#ifndef XEMACLITE_UDP_H
+#define XEMACLITE_UDP_H
+
+#include <stdio.h>
+#include <xemaclite.h>
+#include <xparameters.h>
+
+#include "config.h"
+
+/************************** Constant Definitions ****************************/
+
+#define PHY_REG0_OFFSET		0 /* Register 0 of PHY device */
+#define PHY_REG1_OFFSET 	1 /* Register 1 of PHY device */
+
+#define PHY_REG0_RESET_MASK	0x8000  /* Reset Phy device */
+#define PHY_REG0_LOOPBACK_MASK	0x4000  /* Loopback Enable in Phy */
+#define PHY_REG0_SPD_100_MASK	0x2000  /* Speed of 100Mbps for Phy */
+
+#define PHY_REG1_DETECT_MASK	0x1808	/* Mask to detect PHY device */
+
+#define EMACLITE_PHY_DELAY_SEC	4	/* Amount of time to delay waiting on
+					 * PHY to reset.
+					 */
+
+
+typedef struct _UDP_Packet
+{
+	////////////////////////////////
+	// Data Link Layer Header //////
+	////////////////////////////////
+	u8 mac_dest[6]; // Destination MAC address /////
+	u8 mac_src[6]; // Source MAC address
+	/////
+	u8 mac_protocol[2]; // Internet Layer Protocol /////
+	////////////////////////////////
+	///////////////////////////////////////
+	// Internet Protocol Header (IP) //////
+	///////////////////////////////////////
+	u8 version_length;  // IP version and header length //////
+	u8 ds_ec;  // Service Code
+
+	u8 ip_length_h;  // Total length of the packet(high)
+	u8 ip_length_l;  // Total length of the packet(low)
+
+	u8 id_h;// packet ID (option)//////
+	u8 id_l;
+
+	u8 fragments_h;// packet Fragment (option)//////
+	u8 fragments_l;
+
+	u8 time_to_live;  // time to line in seconds//////
+	u8 protocol;// TCP/IP protocol (UDP here)//////
+
+	u8 head_checksum_h;// Header check sum (must be)//////
+	u8 head_checksum_l;
+
+	u8 src_ip[4];// source IP address//////
+	u8 dst_ip[4];// Destination IP address
+	//////
+	///////////////////////////////////////
+	///////////////////////////////////////
+	// UDP Header (Transport Layer) //////
+	///////////////////////////////////////
+	u8 src_port_h;// Source port//////
+	u8 src_port_l;// Source port//////
+
+	u8 dst_port_h;// Destination port//////
+	u8 dst_port_l;// Destination port//////
+
+	u8 length_h;// Data length//////
+	u8 length_l;// Data length//////
+
+	u8 checksum_h;// Data checksum (option)//////
+	u8 checksum_l;// Data checksum (option)//////
+
+	u8 data[sizeof(ITP_Packet_Header)+ITP_PACKET_MAX_DATA_SIZE];// Actual Data (Application Layer) ////
+
+} UDP_Packet;
+
+/************************** Variable Definitions ****************************/
+/*
+ * Set up valid local MAC addresses. This loop back test uses the LocalAddress
+ * both as a source and destination MAC address.
+ */
+
+XEmacLite EmacLiteInstance;	/* Instance of the EmacLite */
+/************************** Function Prototypes *****************************/
+
+int EmacLiteUdpTransmit(u8 *DataPacket, int size);
+
+u16 GetCheckSum (void *packet);
+
+volatile int TransmitComplete;	/* Flag to indicate that the Transmission
+				 * is complete
+				 */
+#endif

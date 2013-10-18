@@ -1,0 +1,292 @@
+#include "xemaclite_udp.h"
+
+
+static u8 LocalAddress[XEL_MAC_ADDR_SIZE] = MAC_ADDRESS_SOURCE;
+static u8 RemoteAddress[XEL_MAC_ADDR_SIZE] = MAC_ADDRESS_DEST;
+
+
+u8 TxFrame[MAX_MAC_FRAME_SIZE];
+MAC_IP_UDP_Header* mac_ip_udp_header = (MAC_IP_UDP_Header*)&TxFrame;
+u8* mac_ip_udp_payload = (&TxFrame)+sizeof(MAC_IP_UDP_Header);
+
+int my_xemac_init(u16 DeviceId, XEmacLite *EmacLiteInstPtr, XEmacLite_Config *ConfigPtr) {
+
+	int Status;
+
+	ConfigPtr = XEmacLite_LookupConfig(DeviceId);
+	if (ConfigPtr == NULL) {
+			return XST_FAILURE;
+		}
+	Status = XEmacLite_CfgInitialize(EmacLiteInstPtr,
+						ConfigPtr,
+						ConfigPtr->BaseAddress);
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
+	}
+
+	XEmacLite_SetMacAddress(EmacLiteInstPtr, LocalAddress);
+
+	XEmacLite_FlushReceive(EmacLiteInstPtr);
+
+	if (XEmacLite_TxBufferAvailable(EmacLiteInstPtr) != TRUE) {
+		return XST_FAILURE;
+	}
+
+
+
+	return XST_SUCCESS;
+}
+
+
+
+int EmacLiteSendFrame(XEmacLite *InstancePtr, u32 PayloadSize)
+{
+	mac_ip_udp_header->mac_dest[0] = RemoteAddress[0];
+	mac_ip_udp_header->mac_dest[1] = RemoteAddress[1];
+	mac_ip_udp_header->mac_dest[2] = RemoteAddress[2];
+	mac_ip_udp_header->mac_dest[3] = RemoteAddress[3];
+	mac_ip_udp_header->mac_dest[4] = RemoteAddress[4];
+	mac_ip_udp_header->mac_dest[5] = RemoteAddress[5];
+
+	mac_ip_udp_header->mac_src[0] = LocalAddress[0];
+	mac_ip_udp_header->mac_src[1] = LocalAddress[1];
+	mac_ip_udp_header->mac_src[2] = LocalAddress[2];
+	mac_ip_udp_header->mac_src[3] = LocalAddress[3];
+	mac_ip_udp_header->mac_src[4] = LocalAddress[4];
+	mac_ip_udp_header->mac_src[5] = LocalAddress[5];
+
+
+	mac_ip_udp_header->mac_protocol[0] = 0x08;
+	mac_ip_udp_header->mac_protocol[1] = 0x00;
+
+
+	u8 *FramePtr;
+	int Index;
+	FramePtr = (u8 *)TxFrame;
+
+		/*
+		 * Fill in the valid Destination MAC address if
+		 * the Loopback is not enabled.
+		 */
+		FramePtr++;
+		FramePtr++;
+		FramePtr++;
+		FramePtr++;
+		FramePtr++;
+		FramePtr++;
+
+	/*
+	 * Fill in the source MAC address.
+	 */
+		FramePtr++;
+		FramePtr++;
+		FramePtr++;
+		FramePtr++;
+		FramePtr++;
+		FramePtr++;
+
+	/*
+	 * Set up the type/length field - be sure its in network order.
+	 */
+    //*((u16 *)FramePtr) = Xil_Htons(PayloadSize);
+   	FramePtr++;
+	FramePtr++;
+
+	/*
+	 * Now fill in the data field with known values so we can verify them
+	 * on receive.
+	 */
+	for (Index = 0; Index < PayloadSize; Index++) {
+		*FramePtr++ = (u8)43;
+	}
+
+	/*
+	 * Now send the frame.
+	 */
+	return XEmacLite_Send(InstancePtr, (u8 *)TxFrame, PayloadSize + XEL_HEADER_SIZE);
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+static u8 macs[6] = MAC_ADDRESS_SOURCE; // The MAC address of the  source
+
+static u8 ips [4] = IP_ADDRESS_SOURCE ;// The IP address of the source
+
+static u8 macd[6] = MAC_ADDRESS_DEST;// The MAC address of the destination - Remote address
+
+static u8 ipd [4] = IP_ADDRESS_DEST ;// The IP address of the destination
+
+
+int EmacLiteUdpTransmit(u8 *itp_header, u8* itp_data)
+{
+	int Status;
+	XEmacLite emac;
+	
+	
+	/*
+	 * Initialize the EmacLite device.
+	 */
+	
+	Status = XEmacLite_CfgInitialize(&emac,XPAR_EMACLITE_0_DEVICE_ID,XPAR_ETHERNET_MAC_BASEADDR);
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
+	}
+
+	/*
+	 * Set the MAC address.
+	 */
+	XEmacLite_SetMacAddress(&emac, macs);
+	
+	/*
+	 * Empty any existing receive frames.
+	 */
+	XEmacLite_FlushReceive(&emac);
+
+	/*
+	 * Check if there is a TX buffer available, if there isn't it is an
+	 * error.
+	 */
+	if (XEmacLite_TxBufferAvailable(&emac) != TRUE) {
+		return XST_FAILURE;
+	}
+	
+	///////////////////////////////////////////////////////////////////////
+	UDP_Packet udpPackOut; /// Packet Variable
+	///////////////////////////////////////////////////////////////////////
+	///////////////////// Set the destination MAC address /////////////////
+	udpPackOut.mac_dest[0] = macd[0];
+	udpPackOut.mac_dest[1] = macd[1];
+	udpPackOut.mac_dest[2] = macd[2];
+	udpPackOut.mac_dest[3] = macd[3];
+	udpPackOut.mac_dest[4] = macd[4];
+	udpPackOut.mac_dest[5] = macd[5];
+	///////////////////////////////////////////////////////////////////////
+	///////////////////// Set the source MAC address //////////////////////
+	udpPackOut.mac_src[0] = macs[0];
+	udpPackOut.mac_src[1] = macs[1];
+	udpPackOut.mac_src[2] = macs[2];
+	udpPackOut.mac_src[3] = macs[3];
+	udpPackOut.mac_src[4] = macs[4];
+	udpPackOut.mac_src[5] = macs[5];
+	///////////////////////////////////////////////////////////////////////
+	///////////////////// Protocol IP /////////////////////////////////////
+	udpPackOut.mac_protocol[0] = 0x08;
+	udpPackOut.mac_protocol[1] = 0x00;
+	///////////////////////////////////////////////////////////////////////
+	///////////////////// IP Header ///////////////////////////////////////
+	udpPackOut.version_length = 0x45;/// Version and Header Length (Fixed)
+	udpPackOut.ds_ec = 0;
+	/// Always 0
+	/// Total length of the UDP Packet: 28 header bytes + 4 data bytes
+	udpPackOut.ip_length_h = (28+ITP_PACKET_SIZE)/256;
+	udpPackOut.ip_length_l = (28+ITP_PACKET_SIZE)%256;
+
+	udpPackOut.id_h = 0;
+	udpPackOut.id_l = 0;
+	/// Packet ID is zero
+	udpPackOut.fragments_h = 0;
+	udpPackOut.fragments_l = 0;
+
+	/// No fragments
+	udpPackOut.time_to_live = 128; /// Time to live = 128 seconds
+	udpPackOut.protocol = 0x11;/// Set IP protocol to UDP
+	/// Header Checksum - will be assigned later
+	udpPackOut.head_checksum_h = 0;
+	udpPackOut.head_checksum_l = 0;
+	///////////////////////////////////////////////////////////////////////
+	///////////////////// Set source IP address ///////////////////////////
+	udpPackOut.src_ip[0] = ips[0];
+	udpPackOut.src_ip[1] = ips[1];
+	udpPackOut.src_ip[2] = ips[2];
+	udpPackOut.src_ip[3] = ips[3];
+	///////////////////////////////////////////////////////////////////////
+	////////////////////// Set destination IP address /////////////////////
+	udpPackOut.dst_ip[0] = ipd[0];
+	udpPackOut.dst_ip[1] = ipd[1];
+	udpPackOut.dst_ip[2] = ipd[2];
+	udpPackOut.dst_ip[3] = ipd[3];
+	///////////////////////////////////////////////////////////////////////
+	////////////////////// Set source and destination ports ///////////////
+	udpPackOut.src_port_h = 50000/256; // Source Port: match your PC code
+	udpPackOut.src_port_l = 50000%256;
+
+	udpPackOut.dst_port_h = 50000/256; // Destination Port: match your PC code
+	udpPackOut.dst_port_l = 50000%256; // Destination Port: match your PC code
+	///////////////////////////////////////////////////////////////////////
+	// UDP Packet Length = 8 UDP Header Bytes + 4 Data Bytes
+	udpPackOut.length_h = (8 + ITP_PACKET_SIZE)/256;
+	udpPackOut.length_l = (8 + ITP_PACKET_SIZE)%256;
+
+	udpPackOut.checksum_h = 0;
+	udpPackOut.checksum_l = 0;
+	
+	// Data checksum, not used - set to zero
+
+
+	///////////////////////////////////////////////////////////////////////
+	////// Calculate IP header check sum (not including MAC header ////////
+	udpPackOut.head_checksum_h = GetCheckSum ((void *)&udpPackOut.version_length)/256;
+	udpPackOut.head_checksum_l = GetCheckSum ((void *)&udpPackOut.version_length)%256;
+
+	///////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////
+	// Total Packet Length = 14 bytes for MAC header + 28 byte for IP ///
+	// header +  1428 bytes data
+	int totalPacketLength = 14+28+ITP_PACKET_SIZE;
+	///////////////////////////////////////////////////////////////////////
+
+	int i = 0;
+	//copy itp header to udp packet
+	for (i=0;i<sizeof(ITP_Packet_Header);i++)
+			udpPackOut.data[i]= *(itp_header+i);
+	
+	//copy itp data to udp packet
+	for (i=0;i<(ITP_PACKET_MAX_DATA_SIZE);i++)
+			udpPackOut.data[sizeof(ITP_Packet_Header)+i]= *(itp_data+i);
+	
+	return XEmacLite_Send(&emac, &udpPackOut, totalPacketLength);
+
+	
+
+}
+
+/////////////////////////////////////////////////////////////////////////////
+/// Calculate the checksum required to send with the IP packet header.
+/////////////////////////////////////////////////////////////////////////////
+u16 GetCheckSum (void *packet)
+{
+	u16 t1 = (u16)(*((u16*)packet));
+	u16 t2 = (u16)(*((u16*)packet+1));
+	u16 t3 = (u16)(*((u16*)packet+2));
+	u16 t4 = (u16)(*((u16*)packet+3));
+	u16 t5 = (u16)(*((u16*)packet+4));
+	u16 t6 = (u16)(*((u16*)packet+5));
+	u16 t7 = (u16)(*((u16*)packet+6));
+	u16 t8 = (u16)(*((u16*)packet+7));
+	u16 t9 = (u16)(*((u16*)packet+8));
+	u16 t10 = (u16)(*((u16*)packet+9));
+	long sum = t1 + t2 + t3 + t4 + t5 + t6 + t7 + t8 + t9 + t10;
+	u16 p1 = sum & 0x0000FFFF;
+	u16 p2 = (sum>>16) & 0x0000FFFF;
+	u16 moresum = p1 + p2;
+	return ~moresum;
+}
+/////////////////////////////////////////////////////////////////////////////
+
+

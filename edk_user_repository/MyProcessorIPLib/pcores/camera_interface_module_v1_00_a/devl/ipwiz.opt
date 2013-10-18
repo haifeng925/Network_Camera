@@ -1,0 +1,10 @@
+-batch 
+-create camera_interface_module 
+-ver 1.00.a 
+-dir "/home/marco/xilinx/14.3/ISE_DS/edk_user_repository/MyProcessorIPLib" 
+-lang vhdl 
+-bus plbv46 ms 
+-reg 8 
+-xps 
+-ise 
+-driver 

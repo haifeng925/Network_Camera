@@ -1,0 +1,51 @@
+/*
+ * network_tools.c
+ *
+ *  Created on: Feb 27, 2013
+ *      Author: marco
+ */
+#include "network_tools.h"
+
+#include "config.h"
+
+#define IMAGE_SIZE (WIDTH*HEIGHT*BYTE_PER_PIXEL)
+
+
+int send_itp_packet (ITP_Packet_Header * header, u8* data) {
+	EmacLiteUdpTransmit((u8*) header, data);
+	return 0;
+}
+
+int send_image_over_network(void* image_buffer, int image_number){
+
+	int i;
+	int total_packets_per_image;
+
+	ITP_Packet_Header header;
+	u8* data;
+
+	total_packets_per_image = (IMAGE_SIZE/ITP_PACKET_MAX_DATA_SIZE);
+	total_packets_per_image += (IMAGE_SIZE%ITP_PACKET_MAX_DATA_SIZE > 0);
+
+	for (i = 1; i<=total_packets_per_image;i++) {
+		header.width = WIDTH;
+		header.height = HEIGHT;
+		header.total_packets_per_image = total_packets_per_image;
+		header.packet_nr_of_image = i;
+		header.image_data_offset = (i-1)*ITP_PACKET_MAX_DATA_SIZE;
+		if (i==total_packets_per_image && IMAGE_SIZE%ITP_PACKET_MAX_DATA_SIZE > 0) {
+			header.data_length = IMAGE_SIZE%ITP_PACKET_MAX_DATA_SIZE;
+		} else {
+			header.data_length = ITP_PACKET_MAX_DATA_SIZE;
+		}
+		header.image_nr = image_number;
+
+		data = (u8*) (image_buffer+(i-1)*ITP_PACKET_MAX_DATA_SIZE);
+
+		send_itp_packet(&header, data);
+	}
+
+
+
+	return 0;
+}

@@ -1,0 +1,93 @@
+/*
+ * network_tools.h
+ *
+ *  Created on: Feb 27, 2013
+ *      Author: marco
+ */
+#ifndef NETWORK_TOOLS_H_
+#define NETWORK_TOOLS_H_
+
+#include "xbasic_types.h"
+#include <xemaclite.h>
+#include "config.h"
+
+typedef struct _ITP_Packet_Header {
+	Xuint32 width;
+	Xuint32 height;
+	Xuint32 total_packets_per_image;
+	Xuint32 packet_nr_of_image;
+	Xuint32 image_data_offset;
+	Xuint32 data_length;
+	Xuint32 image_nr;
+} ITP_Packet_Header;
+
+typedef struct _MAC_IP_UDP_Header
+{
+	////////////////////////////////
+	// Data Link Layer Header //////
+	////////////////////////////////
+	u8 mac_dest[6]; // Destination MAC address /////
+	u8 mac_src[6]; // Source MAC address
+	/////
+	u8 mac_protocol[2]; // Internet Layer Protocol /////
+	////////////////////////////////
+	///////////////////////////////////////
+	// Internet Protocol Header (IP) //////
+	///////////////////////////////////////
+	u8 version_length;  // IP version and header length //////
+	u8 ds_ec;  // Service Code
+
+	u8 ip_length_h;  // Total length of the packet(high)
+	u8 ip_length_l;  // Total length of the packet(low)
+
+	u8 id_h;// packet ID (option)//////
+	u8 id_l;
+
+	u8 fragments_h;// packet Fragment (option)//////
+	u8 fragments_l;
+
+	u8 time_to_live;  // time to line in seconds//////
+	u8 protocol;// TCP/IP protocol (UDP here)//////
+
+	u8 head_checksum_h;// Header check sum (must be)//////
+	u8 head_checksum_l;
+
+	u8 src_ip[4];// source IP address//////
+	u8 dst_ip[4];// Destination IP address
+	//////
+	///////////////////////////////////////
+	///////////////////////////////////////
+	// UDP Header (Transport Layer) //////
+	///////////////////////////////////////
+	u8 src_port_h;// Source port//////
+	u8 src_port_l;// Source port//////
+
+	u8 dst_port_h;// Destination port//////
+	u8 dst_port_l;// Destination port//////
+
+	u8 length_h;// Data length//////
+	u8 length_l;// Data length//////
+
+	u8 checksum_h;// Data checksum (option)//////
+	u8 checksum_l;// Data checksum (option)//////
+
+} MAC_IP_UDP_Header;
+
+
+#define MAX_MAC_FRAME_SIZE 500
+#define ITP_PACKET_MAX_DATA_SIZE 1400
+
+
+int EmacLiteSendFrame(XEmacLite *InstancePtr, u32 PayloadSize);
+
+int my_xemac_init(u16 DeviceId, XEmacLite *EmacLiteInstPtr, XEmacLite_Config *ConfigPtr);
+
+int send_image_over_network(void* image_buffer, int image_number);
+
+
+u8 TxFrameBuffer[MAX_MAC_FRAME_SIZE];
+
+MAC_IP_UDP_Header* mac_ip_udp_header = (MAC_IP_UDP_Header*)&TxFrameBuffer;
+u8* mac_ip_udp_payload = (u8*)(&TxFrameBuffer)+sizeof(MAC_IP_UDP_Header);
+
+#endif /* NETWORK_TOOLS_H_ */

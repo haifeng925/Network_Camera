@@ -1,0 +1,207 @@
+/*
+ * network_tools.c
+ *
+ *  Created on: Feb 27, 2013
+ *      Author: marco
+ */
+#include "network_tools.h"
+
+
+static u8 LocalAddress[XEL_MAC_ADDR_SIZE] = MAC_ADDRESS_SOURCE;
+static u8 RemoteAddress[XEL_MAC_ADDR_SIZE] = MAC_ADDRESS_DEST;
+
+u8 ips[4] = IP_ADDRESS_SOURCE;// source IP address//////
+u8 ipd[4] = IP_ADDRESS_DEST;// destination IP address//////
+
+
+u16 DeviceId = XPAR_EMACLITE_0_DEVICE_ID;
+XEmacLite EmacLiteInstance;
+XEmacLite_Config EmacConfig;
+
+
+int EmacLiteSendFrame(u32 PayloadSize)
+{
+	XEmacLite *InstancePtr = &EmacLiteInstance;
+
+	MAC_IP_UDP_Header* mac_ip_udp_header = (MAC_IP_UDP_Header*)&TxFrameBuffer;
+	u8* mac_ip_udp_payload = (u8*)(&TxFrameBuffer)+sizeof(MAC_IP_UDP_Header);
+
+	mac_ip_udp_header->mac_dest[0] = RemoteAddress[0];
+	mac_ip_udp_header->mac_dest[1] = RemoteAddress[1];
+	mac_ip_udp_header->mac_dest[2] = RemoteAddress[2];
+	mac_ip_udp_header->mac_dest[3] = RemoteAddress[3];
+	mac_ip_udp_header->mac_dest[4] = RemoteAddress[4];
+	mac_ip_udp_header->mac_dest[5] = RemoteAddress[5];
+
+	mac_ip_udp_header->mac_src[0] = LocalAddress[0];
+	mac_ip_udp_header->mac_src[1] = LocalAddress[1];
+	mac_ip_udp_header->mac_src[2] = LocalAddress[2];
+	mac_ip_udp_header->mac_src[3] = LocalAddress[3];
+	mac_ip_udp_header->mac_src[4] = LocalAddress[4];
+	mac_ip_udp_header->mac_src[5] = LocalAddress[5];
+
+
+	mac_ip_udp_header->mac_protocol[0] = 0x08;
+	mac_ip_udp_header->mac_protocol[1] = 0x00;
+
+	///////////////////////////////////////////////////////////////////////
+	///////////////////// IP Header ///////////////////////////////////////
+	mac_ip_udp_header->version_length = 0x45;/// Version and Header Length (Fixed)
+	mac_ip_udp_header->ds_ec = 0;
+	/// Always 0
+	/// Total length of the IP_UDP Packet: 28 header bytes + 4 data bytes
+	mac_ip_udp_header->ip_length_h = (28+PayloadSize)/256;
+	mac_ip_udp_header->ip_length_l = (28+PayloadSize)%256;
+
+	mac_ip_udp_header->id_h = 0;
+	mac_ip_udp_header->id_l = 0;
+	/// Packet ID is zero
+	mac_ip_udp_header->fragments_h = 0;
+	mac_ip_udp_header->fragments_l = 0;
+
+	/// No fragments
+	mac_ip_udp_header->time_to_live = 128; /// Time to live = 128 seconds
+	mac_ip_udp_header->protocol = 0x11;/// Set IP protocol to UDP
+	/// Header Checksum - will be assigned later
+	mac_ip_udp_header->head_checksum_h = 0;
+	mac_ip_udp_header->head_checksum_l = 0;
+	///////////////////////////////////////////////////////////////////////
+	///////////////////// Set source IP address ///////////////////////////
+	mac_ip_udp_header->src_ip[0] = ips[0];
+	mac_ip_udp_header->src_ip[1] = ips[1];
+	mac_ip_udp_header->src_ip[2] = ips[2];
+	mac_ip_udp_header->src_ip[3] = ips[3];
+	///////////////////////////////////////////////////////////////////////
+	////////////////////// Set destination IP address /////////////////////
+	mac_ip_udp_header->dst_ip[0] = ipd[0];
+	mac_ip_udp_header->dst_ip[1] = ipd[1];
+	mac_ip_udp_header->dst_ip[2] = ipd[2];
+	mac_ip_udp_header->dst_ip[3] = ipd[3];
+	///////////////////////////////////////////////////////////////////////
+	////////////////////// Set source and destination ports ///////////////
+	mac_ip_udp_header->src_port_h = 50000/256; // Source Port: match your PC code
+	mac_ip_udp_header->src_port_l = 50000%256;
+
+	mac_ip_udp_header->dst_port_h = 50000/256; // Destination Port: match your PC code
+	mac_ip_udp_header->dst_port_l = 50000%256; // Destination Port: match your PC code
+	///////////////////////////////////////////////////////////////////////
+	// UDP Packet Length = 8 UDP Header Bytes + 4 Data Bytes
+	mac_ip_udp_header->length_h = (8 + PayloadSize)/256;
+	mac_ip_udp_header->length_l = (8 + PayloadSize)%256;
+
+	mac_ip_udp_header->checksum_h = 0;
+	mac_ip_udp_header->checksum_l = 0;
+
+	// Data checksum, not used - set to zero
+
+	///////////////////////////////////////////////////////////////////////
+	////// Calculate IP header check sum (not including MAC header ////////
+	mac_ip_udp_header->head_checksum_h = GetCheckSum ((void *)&(mac_ip_udp_header->version_length))/256;
+	mac_ip_udp_header->head_checksum_l = GetCheckSum ((void *)&(mac_ip_udp_header->version_length))%256;
+
+
+	/* // test data
+	int Index;
+	for (Index = 0; Index < PayloadSize; Index++) {
+		*(mac_ip_udp_payload++) = (u8)Index;
+	}
+	*/
+
+	return XEmacLite_Send(InstancePtr, (u8 *)TxFrameBuffer, PayloadSize + sizeof(MAC_IP_UDP_Header));
+
+}
+
+int my_xemac_init() {
+
+	XEmacLite *EmacLiteInstPtr = &EmacLiteInstance;
+	XEmacLite_Config *ConfigPtr = &EmacConfig;
+
+	int Status;
+
+	ConfigPtr = XEmacLite_LookupConfig(DeviceId);
+	if (ConfigPtr == NULL) {
+			return XST_FAILURE;
+		}
+	Status = XEmacLite_CfgInitialize(EmacLiteInstPtr,
+						ConfigPtr,
+						ConfigPtr->BaseAddress);
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
+	}
+
+	XEmacLite_SetMacAddress(EmacLiteInstPtr, LocalAddress);
+
+	XEmacLite_FlushReceive(EmacLiteInstPtr);
+
+	if (XEmacLite_TxBufferAvailable(EmacLiteInstPtr) != TRUE) {
+		return XST_FAILURE;
+	}
+
+	return XST_SUCCESS;
+}
+
+
+
+int send_itp_packet (ITP_Packet_Header * header, u8* data) {
+	EmacLiteSendFrame(XEmacLite *InstancePtr, u32 PayloadSize)
+	return 0;
+}
+
+int send_image_over_network(void* image_buffer, int image_number){
+
+	int i;
+	int total_packets_per_image;
+
+	ITP_Packet_Header header;
+	u8* data;
+
+	total_packets_per_image = (IMAGE_SIZE/ITP_PACKET_MAX_DATA_SIZE);
+	total_packets_per_image += (IMAGE_SIZE%ITP_PACKET_MAX_DATA_SIZE > 0);
+
+	for (i = 1; i<=total_packets_per_image;i++) {
+		header.width = WIDTH;
+		header.height = HEIGHT;
+		header.total_packets_per_image = total_packets_per_image;
+		header.packet_nr_of_image = i;
+		header.image_data_offset = (i-1)*ITP_PACKET_MAX_DATA_SIZE;
+		if (i==total_packets_per_image && IMAGE_SIZE%ITP_PACKET_MAX_DATA_SIZE > 0) {
+			header.data_length = IMAGE_SIZE%ITP_PACKET_MAX_DATA_SIZE;
+		} else {
+			header.data_length = ITP_PACKET_MAX_DATA_SIZE;
+		}
+		header.image_nr = image_number;
+
+		data = (u8*) (image_buffer+(i-1)*ITP_PACKET_MAX_DATA_SIZE);
+
+		send_itp_packet(&header, data);
+	}
+
+
+
+	return 0;
+}
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+/// Calculate the checksum required to send with the IP packet header.
+/////////////////////////////////////////////////////////////////////////////
+u16 GetCheckSum (void *packet)
+{
+	u16 t1 = (u16)(*((u16*)packet));
+	u16 t2 = (u16)(*((u16*)packet+1));
+	u16 t3 = (u16)(*((u16*)packet+2));
+	u16 t4 = (u16)(*((u16*)packet+3));
+	u16 t5 = (u16)(*((u16*)packet+4));
+	u16 t6 = (u16)(*((u16*)packet+5));
+	u16 t7 = (u16)(*((u16*)packet+6));
+	u16 t8 = (u16)(*((u16*)packet+7));
+	u16 t9 = (u16)(*((u16*)packet+8));
+	u16 t10 = (u16)(*((u16*)packet+9));
+	long sum = t1 + t2 + t3 + t4 + t5 + t6 + t7 + t8 + t9 + t10;
+	u16 p1 = sum & 0x0000FFFF;
+	u16 p2 = (sum>>16) & 0x0000FFFF;
+	u16 moresum = p1 + p2;
+	return ~moresum;
+}

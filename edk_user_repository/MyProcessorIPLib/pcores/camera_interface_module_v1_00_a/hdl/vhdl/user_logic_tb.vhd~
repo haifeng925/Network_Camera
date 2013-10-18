@@ -1,0 +1,213 @@
+-- TestBench Template 
+
+  LIBRARY ieee;
+  USE ieee.std_logic_1164.ALL;
+  USE ieee.numeric_std.ALL;
+
+  ENTITY user_logic_tb IS
+  END user_logic_tb;
+
+  ARCHITECTURE behavior OF user_logic_tb IS 
+  -- Component Declaration
+			 COMPONENT ImageGenerator
+			 PORT(
+				   clk : IN  std_logic;
+				   reset : IN  std_logic;
+				   startingValue : IN  std_logic_vector(7 downto 0);
+				   Pixel_Data : OUT  std_logic_vector(7 downto 0);
+				   Pixel_Clk : OUT  std_logic;
+				   EOL : OUT  std_logic;
+				   EOF : OUT  std_logic
+				  );
+			 END COMPONENT;
+  
+          COMPONENT user_logic
+				 generic
+				  (
+					 -- ADD USER GENERICS BELOW THIS LINE ---------------
+					 --USER generics added here
+					 -- ADD USER GENERICS ABOVE THIS LINE ---------------
+
+					 -- DO NOT EDIT BELOW THIS LINE ---------------------
+					 -- Bus protocol parameters, do not add to or delete
+					 C_SLV_DWIDTH                   : integer              := 32;
+					 C_MST_AWIDTH                   : integer              := 32;
+					 C_MST_DWIDTH                   : integer              := 32;
+					 C_NUM_REG                      : integer              := 12
+					 -- DO NOT EDIT ABOVE THIS LINE ---------------------
+				  );
+				  port
+				  (
+					 -- ADD USER PORTS BELOW THIS LINE ------------------
+					 --USER ports added here
+					 PIXEL_DATA    : in  std_logic_vector(0 to 7);
+					 PIXEL_CLOCK   : in  std_logic;
+					 END_OF_LINE   : in  std_logic;
+					 END_OF_FRAME  : in  std_logic;
+					 -- ADD USER PORTS ABOVE THIS LINE ------------------
+
+					 -- DO NOT EDIT BELOW THIS LINE ---------------------
+					 -- Bus protocol ports, do not add to or delete
+					 Bus2IP_Clk                     : in  std_logic;
+					 Bus2IP_Reset                   : in  std_logic;
+					 Bus2IP_Data                    : in  std_logic_vector(0 to 32-1);
+					 Bus2IP_BE                      : in  std_logic_vector(0 to 32/8-1);
+					 Bus2IP_RdCE                    : in  std_logic_vector(0 to 12-1);
+					 Bus2IP_WrCE                    : in  std_logic_vector(0 to 12-1);
+					 IP2Bus_Data                    : out std_logic_vector(0 to 32-1);
+					 IP2Bus_RdAck                   : out std_logic;
+					 IP2Bus_WrAck                   : out std_logic;
+					 IP2Bus_Error                   : out std_logic;
+					 IP2Bus_MstRd_Req               : out std_logic;
+					 IP2Bus_MstWr_Req               : out std_logic;
+					 IP2Bus_Mst_Addr                : out std_logic_vector(0 to 32-1);
+					 IP2Bus_Mst_BE                  : out std_logic_vector(0 to 32/8-1);
+					 IP2Bus_Mst_Lock                : out std_logic;
+					 IP2Bus_Mst_Reset               : out std_logic;
+					 Bus2IP_Mst_CmdAck              : in  std_logic;
+					 Bus2IP_Mst_Cmplt               : in  std_logic;
+					 Bus2IP_Mst_Error               : in  std_logic;
+					 Bus2IP_Mst_Rearbitrate         : in  std_logic;
+					 Bus2IP_Mst_Cmd_Timeout         : in  std_logic;
+					 Bus2IP_MstRd_d                 : in  std_logic_vector(0 to 32-1);
+					 Bus2IP_MstRd_src_rdy_n         : in  std_logic;
+					 IP2Bus_MstWr_d                 : out std_logic_vector(0 to 32-1);
+					 Bus2IP_MstWr_dst_rdy_n         : in  std_logic
+					 -- DO NOT EDIT ABOVE THIS LINE ---------------------
+				  );
+          END COMPONENT;
+
+    signal PIXEL_DATA    		:  std_logic_vector(0 to 7);
+	 signal PIXEL_CLOCK_IN   	:  std_logic;
+	 signal PIXEL_CLOCK_SIGNAL :  std_logic;
+	 signal END_OF_LINE   		:  std_logic;
+	 signal END_OF_FRAME  		:  std_logic;   
+          
+    signal Bus2IP_Clk                     :  std_logic;
+    signal Bus2IP_Reset                   :  std_logic;
+    signal Bus2IP_Data                    :  std_logic_vector(0 to 32-1);
+    signal Bus2IP_BE                      :  std_logic_vector(0 to 32/8-1);
+    signal Bus2IP_RdCE                    :  std_logic_vector(0 to 12-1);
+    signal Bus2IP_WrCE                    :  std_logic_vector(0 to 12-1);
+    signal IP2Bus_Data                    :  std_logic_vector(0 to 32-1);
+    signal IP2Bus_RdAck                   :  std_logic;
+    signal IP2Bus_WrAck                   :  std_logic;
+    signal IP2Bus_Error                   :  std_logic;
+    signal IP2Bus_MstRd_Req               :  std_logic;
+    signal IP2Bus_MstWr_Req               :  std_logic;
+    signal IP2Bus_Mst_Addr                :  std_logic_vector(0 to 32-1);
+    signal IP2Bus_Mst_BE                  :  std_logic_vector(0 to 32/8-1);
+    signal IP2Bus_Mst_Lock                :  std_logic;
+    signal IP2Bus_Mst_Reset               :  std_logic;
+    signal Bus2IP_Mst_CmdAck              :  std_logic;
+    signal Bus2IP_Mst_Cmplt               :  std_logic;
+    signal Bus2IP_Mst_Error               :  std_logic;
+    signal Bus2IP_Mst_Rearbitrate         :  std_logic;
+    signal Bus2IP_Mst_Cmd_Timeout         :  std_logic;
+    signal Bus2IP_MstRd_d                 :  std_logic_vector(0 to 32-1);
+    signal Bus2IP_MstRd_src_rdy_n         :  std_logic;
+    signal IP2Bus_MstWr_d                 :  std_logic_vector(0 to 32-1);
+    signal Bus2IP_MstWr_dst_rdy_n         :  std_logic;
+    
+    
+   signal startingValue : std_logic_vector(7 downto 0) := (others => '0');
+   
+   
+   -- Clock period definitions
+   constant bus_clk_period : time := 200 ns;
+   constant Pixel_Clk_period : time := 1 us;
+   
+
+  BEGIN
+  -- Component Instantiation
+  
+  -- Instantiate the Unit Under Test (UUT)
+    userlogic: user_logic PORT MAP(
+				 PIXEL_DATA    => PIXEL_DATA,
+				 PIXEL_CLOCK   => PIXEL_CLOCK_SIGNAL,
+				 END_OF_LINE   => END_OF_LINE,
+				 END_OF_FRAME  => END_OF_FRAME,
+				 -- ADD USER PORTS ABOVE THIS LINE ------------------
+
+				 -- DO NOT EDIT BELOW THIS LINE ---------------------
+				 -- Bus protocol ports, do not add to or delete
+				 Bus2IP_Clk                     => Bus2IP_Clk,
+				 Bus2IP_Reset                   => Bus2IP_Reset,
+				 Bus2IP_Data                    => Bus2IP_Data,
+				 Bus2IP_BE                      => Bus2IP_BE,
+				 Bus2IP_RdCE                    => Bus2IP_RdCE,
+				 Bus2IP_WrCE                    => Bus2IP_WrCE,
+				 IP2Bus_Data                    => IP2Bus_Data,
+				 IP2Bus_RdAck                   => IP2Bus_RdAck,
+				 IP2Bus_WrAck                   => IP2Bus_WrAck,
+				 IP2Bus_Error                   => IP2Bus_Error,
+				 IP2Bus_MstRd_Req					  => IP2Bus_MstRd_Req,
+				 IP2Bus_MstWr_Req               => IP2Bus_MstWr_Req,
+				 IP2Bus_Mst_Addr                => IP2Bus_Mst_Addr,
+				 IP2Bus_Mst_BE                  => IP2Bus_Mst_BE,
+				 IP2Bus_Mst_Lock                => IP2Bus_Mst_Lock,
+				 IP2Bus_Mst_Reset               => IP2Bus_Mst_Reset,
+				 Bus2IP_Mst_CmdAck              => Bus2IP_Mst_CmdAck ,
+				 Bus2IP_Mst_Cmplt               => Bus2IP_Mst_Cmplt,
+				 Bus2IP_Mst_Error               => Bus2IP_Mst_Error,
+				 Bus2IP_Mst_Rearbitrate         => Bus2IP_Mst_Rearbitrate,
+				 Bus2IP_Mst_Cmd_Timeout         => Bus2IP_Mst_Cmd_Timeout,
+				 Bus2IP_MstRd_d                 => Bus2IP_MstRd_d,
+				 Bus2IP_MstRd_src_rdy_n         => Bus2IP_MstRd_src_rdy_n,
+				 IP2Bus_MstWr_d                 => IP2Bus_MstWr_d,
+				 Bus2IP_MstWr_dst_rdy_n         => Bus2IP_MstWr_dst_rdy_n
+     );
+
+    imagegen: ImageGenerator PORT MAP (
+		       clk => PIXEL_CLOCK_IN,
+		       reset => Bus2IP_Reset,
+		       startingValue => startingValue,
+		       Pixel_Data => PIXEL_DATA,
+		       Pixel_Clk => PIXEL_CLOCK_SIGNAL,
+		       EOL => END_OF_LINE,
+		       EOF => END_OF_FRAME
+    );
+
+   -- Clock process definitions
+   bus_clk_process :process
+   begin
+		Bus2IP_Clk <= '1';
+		wait for bus_clk_period/2;
+		Bus2IP_Clk <= '0';
+		wait for bus_clk_period/2;
+   end process;
+ 
+   Pixel_Clk_process :process
+   begin
+		PIXEL_CLOCK_IN <= '1';
+		wait for Pixel_Clk_period/2;
+		PIXEL_CLOCK_IN <= '0';
+		wait for Pixel_Clk_period/2;
+		
+		
+   end process;
+  --  Test Bench Statements
+     tb : PROCESS
+     BEGIN
+
+        wait for 100 ns; -- wait until global set/reset completes
+        Bus2IP_Reset <= '1';
+        wait for Pixel_Clk_period;
+        Bus2IP_Reset <= '0';
+        wait for Pixel_Clk_period;
+        
+        Bus2IP_Mst_CmdAck <= '1';
+        Bus2IP_Mst_Cmplt <= '1';
+        
+        
+        
+        
+       
+
+        -- Add user defined stimulus here
+
+        wait; -- will wait forever
+     END PROCESS tb;
+  --  End Test Bench 
+
+  END;

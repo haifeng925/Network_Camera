@@ -1,0 +1,6 @@
+run 1 us
+isim force add {/user_logic_tb/as_log/mst_go} 1 -radix bin 
+run 0.2 us
+isim force remove {/user_logic_tb/as_log/mst_go}
+run 0.8 us
+run 200 us
